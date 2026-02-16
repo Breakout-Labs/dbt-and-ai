@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: customers
+    description: Each record represents a customer.
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: A customer's first name.
+      - name: last_name
+        description: A customer's last name.
+      - name: count_orders
+        description: The number of orders a customer has had all-time.
+      - name: first_order_at
+        description: The timestamp of a customer's first order.
+      - name: most_recent_order_at
+        description: The timestamp of a customer's most recent order.
+        
+  - name: orders
+    description: Each record represents an order.
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null

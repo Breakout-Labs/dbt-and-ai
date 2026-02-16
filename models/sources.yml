@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: ecomm
+    database: raw
+    tables:
+      - name: deliveries
+      
+      - name: customers
+        description: Each record in this table represents a customer in our ecommerce application
+        columns:
+          - name: id
+            description: "{{ doc('customer_id') }}"
+      - name: orders
+        identifier: orders_us
+        description: Each record in this table represents an order in our ecommerce application.
+      
+      
+  - name: sheets
+    database: raw
+    tables:
+      - name: customer_survey_responses
