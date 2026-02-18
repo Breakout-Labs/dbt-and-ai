@@ -21,7 +21,5 @@ models:
     +materialized: view
     marts:
       +materialized: table
-      marketing:
-        +schema: marketing
     intermediate:
       +materialized: ephemeral
