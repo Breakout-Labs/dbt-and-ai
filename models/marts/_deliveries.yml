@@ -7,6 +7,9 @@ models:
       delivery records from the ecommerce source to their associated orders to resolve
       customer ownership. Delivery outcomes are bucketed into successful ('delivered'),
       failed ('failed'), and all other statuses.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
@@ -18,24 +21,42 @@ models:
         description: Total number of delivery records associated with the customer across all statuses.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
 
       - name: successful_deliveries
         description: Number of deliveries with a status of 'delivered' for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              expression: "<= total_deliveries"
 
       - name: failed_deliveries
         description: Number of deliveries with a status of 'failed' for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              expression: "<= total_deliveries"
 
       - name: other_status_deliveries
         description: Number of deliveries with a status other than 'delivered' or 'failed' for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              expression: "<= total_deliveries"
 
       - name: last_delivery_date
         description: >
           The date of the customer's most recent successful delivery, derived from the
-          delivered_at timestamp in the deliveries source. May be null if no delivered_at
-          timestamp has been recorded for any of the customer's deliveries.
+          delivered_at timestamp in the deliveries source. Null when the customer has
+          no deliveries with a status of 'delivered'.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+              where: "last_delivery_date is not null"
