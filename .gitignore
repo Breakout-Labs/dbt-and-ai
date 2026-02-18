@@ -3,4 +3,3 @@
 target/
 dbt_packages/
 logs/
-package_lock.yml
