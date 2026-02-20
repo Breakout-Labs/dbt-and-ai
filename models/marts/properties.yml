@@ -27,3 +27,41 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents a customer and their aggregated delivery statistics. All customers are included, even those with no deliveries.
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('stg_ecomm__customers')
+              field: customer_id
+      - name: total_deliveries
+        description: The total number of deliveries across all orders for the customer.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'cancelled' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'cancelled' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+      - name: last_delivery_date
+        description: The timestamp of the customer's most recent successfully delivered order. Null if the customer has no deliveries.
