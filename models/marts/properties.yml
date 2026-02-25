@@ -30,6 +30,13 @@ models:
 
   - name: deliveries
     description: Each record represents a customer's aggregated delivery statistics across all of their orders.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "fulfillment_ratio between 0 and 100"
+          config:
+            where: "fulfillment_ratio is not null"
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
@@ -41,24 +48,42 @@ models:
         description: The total number of deliveries across all of a customer's orders.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: failed_deliveries
         description: The number of deliveries with a status of 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: last_delivery_date
         description: The date of the customer's most recent delivered delivery. Will be null if the customer has no deliveries with a status of 'delivered'.
-      
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "is null"
+              config:
+                where: "successful_deliveries = 0"
+
       - name: fulfillment_ratio
-        description: The percentage of deliveries that were successfully delivered out of the total deliveries.
+        description: The percentage of deliveries that were successfully delivered, calculated as successful_deliveries / total_deliveries * 100. Will be null if the customer has no deliveries.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "is null"
+              config:
+                where: "total_deliveries = 0"
