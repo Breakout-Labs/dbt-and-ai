@@ -27,3 +27,30 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents a customer's aggregated delivery history, including total, successful, failed, and other delivery counts, as well as the date of their most recent delivery.
+    columns:
+      - name: customer_id
+        description: The unique identifier for the customer. Foreign key to `stg_ecomm__customers`.
+        tests:
+          - unique
+          - not_null
+      - name: total_deliveries
+        description: Total number of deliveries across all of the customer's orders, regardless of status.
+        tests:
+          - not_null
+      - name: successful_deliveries
+        description: Number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+      - name: failed_deliveries
+        description: Number of deliveries with a status of 'failed'.
+        tests:
+          - not_null
+      - name: other_status_deliveries
+        description: Number of deliveries with a status other than 'delivered' or 'failed', such as in-progress or cancelled statuses.
+        tests:
+          - not_null
+      - name: last_delivery_date
+        description: The date of the customer's most recent successful delivery, derived from the `delivered_at` timestamp on the delivery record.          
