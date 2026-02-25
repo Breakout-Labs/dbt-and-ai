@@ -30,24 +30,47 @@ models:
 
   - name: deliveries
     description: Each record represents a customer's aggregated delivery history, including counts of successful, failed, and other-status deliveries.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries = successful_deliveries + failed_deliveries + other_status_deliveries"
+          name: deliveries__total_equals_sum_of_parts
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
         tests:
           - unique
           - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
 
       - name: total_deliveries
         description: The total number of deliveries associated with a customer across all orders and statuses.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+              name: deliveries__total_deliveries_at_least_one
 
       - name: successful_deliveries
         description: The number of deliveries for a customer with a status of 'delivered'.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__successful_deliveries_non_negative
 
       - name: failed_deliveries
         description: The number of deliveries for a customer with a status of 'cancelled'.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__failed_deliveries_non_negative
 
       - name: other_status_deliveries
         description: The number of deliveries for a customer with a status other than 'delivered' or 'cancelled'.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__other_status_deliveries_non_negative
 
       - name: last_delivery_date
-        description: The date of the customer's most recent delivered shipment.
+        description: The date of the customer's most recent delivered shipment. Null when a customer has no successfully delivered orders.
