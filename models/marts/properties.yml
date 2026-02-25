@@ -30,27 +30,54 @@ models:
 
   - name: deliveries
     description: Each record represents a customer's all-time delivery summary, including counts of successful, failed, and other-status deliveries.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+          config:
+            description: "The sum of successful, failed, and other_status deliveries must equal total_deliveries."
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
         tests:
           - unique
           - not_null
+          - relationships:
+              to: ref('stg_ecomm__customers')
+              field: customer_id
       - name: total_deliveries
         description: The total number of deliveries across all orders for the customer.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
+              inclusive: true
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
       - name: failed_deliveries
         description: The number of deliveries with a status of 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
       - name: last_delivery_date
-        description: The date of the customer's most recent successful delivery.
+        description: The date of the customer's most recent successful delivery. Null when the customer has no successful deliveries.
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for the customer, rounded to 6 decimal places. A value of 1.0 means all deliveries were successful. Null when total_deliveries is zero.
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+              inclusive: true
