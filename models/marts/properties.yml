@@ -27,3 +27,31 @@ models:
         tests:
           - unique
           - not_null
+  - name: deliveries
+    description: Each record represents aggregated delivery metrics for a customer. Grain is one row per customer.
+    columns:
+      - name: customer_id
+        description: The unique identifier of the customer.
+        tests:
+          - unique
+          - not_null
+      - name: total_deliveries
+        description: The total number of deliveries associated with the customer's orders.
+        tests:
+          - not_null
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'cancelled'.
+        tests:
+          - not_null
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
+        tests:
+          - not_null
+      - name: last_delivery_date
+        description: The date of the customer's most recent delivery.
+      - name: fulfillment_ratio
+        description: The ratio of successfully delivered orders to total deliveries for the customer. Returns 0 if the customer has no deliveries.
