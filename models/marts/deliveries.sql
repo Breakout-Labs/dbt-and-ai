@@ -29,8 +29,8 @@ aggregated as (
         joined.customer_id,
         count(joined.delivery_id) as total_deliveries,
         count(case when joined.delivery_status = 'delivered' then 1 end) as successful_deliveries,
-        count(case when joined.delivery_status = 'failed' then 1 end) as failed_deliveries,
-        count(case when joined.delivery_status not in ('delivered', 'failed') then 1 end) as other_status_deliveries,
+        count(case when joined.delivery_status = 'cancelled' then 1 end) as failed_deliveries,
+        count(case when joined.delivery_status not in ('delivered', 'cancelled') then 1 end) as other_status_deliveries,
         max(joined.delivered_at)::date as last_delivery_date,
         (count(case when joined.delivery_status = 'delivered' then 1 end) * 100.0 / count(joined.delivery_id)) as fulfillment_ratio
     from joined
