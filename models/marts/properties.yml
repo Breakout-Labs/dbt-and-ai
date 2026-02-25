@@ -30,24 +30,59 @@ models:
 
   - name: deliveries
     description: Each record represents a customer's aggregated delivery statistics, including total, successful, failed, and other delivery counts, as well as the date of their most recent delivery.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries = successful_deliveries + failed_deliveries + other_status_deliveries"
+          name: deliveries__delivery_counts_sum_to_total
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries >= 1"
+          name: deliveries__total_deliveries_at_least_one
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
         tests:
           - unique
           - not_null
+          - relationships:
+              to: ref('stg_ecomm__customers')
+              field: customer_id
 
       - name: total_deliveries
         description: Total number of deliveries across all statuses for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+              name: deliveries__total_deliveries_gte_one
 
       - name: successful_deliveries
         description: Total number of deliveries with a status of 'delivered' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__successful_deliveries_non_negative
 
       - name: failed_deliveries
         description: Total number of deliveries with a status of 'cancelled' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__failed_deliveries_non_negative
 
       - name: other_status_deliveries
         description: Total number of deliveries with a status other than 'delivered' or 'cancelled' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__other_status_deliveries_non_negative
 
       - name: last_delivery_date
         description: The timestamp of the customer's most recent delivery across all delivery statuses.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_timestamp"
+              name: deliveries__last_delivery_date_not_in_future
+              where: "last_delivery_date is not null"
