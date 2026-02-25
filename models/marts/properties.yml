@@ -27,3 +27,76 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents a customer's aggregated delivery statistics across all of their orders.
+    tests:
+      - dbt_utils.expression_is_true:
+          name: deliveries_delivery_counts_sum_to_total
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+      - dbt_utils.expression_is_true:
+          name: deliveries_fulfillment_ratio_matches_successful_deliveries
+          expression: "fulfillment_ratio = successful_deliveries / total_deliveries"
+          where: "total_deliveries > 0"
+      - dbt_utils.expression_is_true:
+          name: deliveries_last_delivery_date_is_null_when_no_successful_deliveries
+          expression: "last_delivery_date is null"
+          where: "successful_deliveries = 0"
+      - dbt_utils.expression_is_true:
+          name: deliveries_last_delivery_date_is_not_in_future
+          expression: "last_delivery_date <= current_date"
+          where: "last_delivery_date is not null"
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+      - name: total_deliveries
+        description: The total number of deliveries associated with the customer's orders.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: deliveries_total_deliveries_is_not_negative
+              arguments:
+                min_value: 0
+                strictly: false
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: deliveries_successful_deliveries_is_not_negative
+              arguments:
+                min_value: 0
+                strictly: false
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'cancelled'.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: deliveries_failed_deliveries_is_not_negative
+              arguments:
+                min_value: 0
+                strictly: false
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: deliveries_other_status_deliveries_is_not_negative
+              arguments:
+                min_value: 0
+                strictly: false
+      - name: last_delivery_date
+        description: The date of the customer's most recent successful delivery.
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              name: deliveries_fulfillment_ratio_is_between_0_and_1
+              arguments:
+                min_value: 0
+                max_value: 1
+                strictly: false
+                row_condition: "total_deliveries > 0"
