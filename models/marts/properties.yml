@@ -32,13 +32,16 @@ models:
     description: Each record represents aggregated delivery data for a customer.
     tests:
       - dbt_utils.expression_is_true:
-          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+          arguments:
+            expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
           name: deliveries__delivery_counts_sum_to_total
       - dbt_utils.expression_is_true:
-          expression: "successful_deliveries <= total_deliveries"
+          arguments:
+            expression: "successful_deliveries <= total_deliveries"
           name: deliveries__successful_deliveries_lte_total
       - dbt_utils.expression_is_true:
-          expression: "last_delivery_date is null or successful_deliveries > 0"
+          arguments:
+            expression: "last_delivery_date is null or successful_deliveries > 0"
           name: deliveries__last_delivery_date_null_when_no_successful_deliveries
 
     columns:
@@ -48,15 +51,17 @@ models:
           - unique
           - not_null
           - relationships:
-              to: ref('stg_ecomm__customers')
-              field: customer_id
+              arguments:
+                to: ref('stg_ecomm__customers')
+                field: customer_id
 
       - name: total_deliveries
         description: The total number of deliveries associated with the customer across all statuses.
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: ">= 1"
+              arguments:
+                expression: ">= 1"
               name: deliveries__total_deliveries_gte_one
 
       - name: successful_deliveries
@@ -64,7 +69,8 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: ">= 0"
+              arguments:
+                expression: ">= 0"
               name: deliveries__successful_deliveries_gte_zero
 
       - name: failed_deliveries
@@ -72,7 +78,8 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: ">= 0"
+              arguments:
+                expression: ">= 0"
               name: deliveries__failed_deliveries_gte_zero
 
       - name: other_status_deliveries
@@ -80,7 +87,8 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: ">= 0"
+              arguments:
+                expression: ">= 0"
               name: deliveries__other_status_deliveries_gte_zero
 
       - name: last_delivery_date
@@ -91,5 +99,6 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "between 0 and 1"
+              arguments:
+                expression: "between 0 and 1"
               name: deliveries__fulfillment_ratio_between_zero_and_one
