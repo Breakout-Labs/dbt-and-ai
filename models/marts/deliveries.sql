@@ -14,8 +14,8 @@ deliveries as (
 joined as (
  
     select
-        orders.customer_id,
-        deliveries.delivery_id,
+        orders.customer_id as customer_id,
+        deliveries.delivery_id as delivery_id,
         deliveries.delivery_status,
         deliveries.delivered_at
     from deliveries

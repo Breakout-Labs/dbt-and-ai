@@ -1,5 +1,5 @@
 version: 2
-
+ 
 models:
   - name: customers
     description: Each record represents a customer.
@@ -19,7 +19,7 @@ models:
         description: The timestamp of a customer's first order.
       - name: most_recent_order_at
         description: The timestamp of a customer's most recent order.
-        
+ 
   - name: orders
     description: Each record represents an order.
     columns:
@@ -27,7 +27,7 @@ models:
         tests:
           - unique
           - not_null
-
+ 
   - name: deliveries
     description: Each record represents a customer's aggregated delivery history, including total, successful, failed, and other delivery counts, as well as the date of their most recent delivery.
     columns:
@@ -36,21 +36,37 @@ models:
         tests:
           - unique
           - not_null
+          - relationships:
+              to: ref('stg_ecomm__customers')
+              field: customer_id
+ 
       - name: total_deliveries
         description: Total number of deliveries across all of the customer's orders, regardless of status.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+ 
       - name: successful_deliveries
         description: Number of deliveries with a status of 'delivered'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+ 
       - name: failed_deliveries
         description: Number of deliveries with a status of 'failed'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+ 
       - name: other_status_deliveries
         description: Number of deliveries with a status other than 'delivered' or 'failed', such as in-progress or cancelled statuses.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+ 
       - name: last_delivery_date
-        description: The date of the customer's most recent successful delivery, derived from the `delivered_at` timestamp on the delivery record.          
+        description: The date of the customer's most recent successful delivery, derived from the `delivered_at` timestamp on the delivery record.
