@@ -27,3 +27,69 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents aggregated delivery data for a customer.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+          name: deliveries__delivery_counts_sum_to_total
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries <= total_deliveries"
+          name: deliveries__successful_deliveries_lte_total
+      - dbt_utils.expression_is_true:
+          expression: "last_delivery_date is null or successful_deliveries > 0"
+          name: deliveries__last_delivery_date_null_when_no_successful_deliveries
+
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('stg_ecomm__customers')
+              field: customer_id
+
+      - name: total_deliveries
+        description: The total number of deliveries associated with the customer across all statuses.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+              name: deliveries__total_deliveries_gte_one
+
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__successful_deliveries_gte_zero
+
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'failed' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__failed_deliveries_gte_zero
+
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'failed' for the customer.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: deliveries__other_status_deliveries_gte_zero
+
+      - name: last_delivery_date
+        description: The date of the customer's most recent successful delivery.
+
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for the customer. A value of 1.0 indicates all deliveries were successful.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "between 0 and 1"
+              name: deliveries__fulfillment_ratio_between_zero_and_one
