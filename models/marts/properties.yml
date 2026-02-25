@@ -54,11 +54,20 @@ models:
         description: The number of deliveries with a status of 'failed' for the customer.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+                min_value: 0
 
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'failed' for the customer.
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
 
       - name: last_delivery_at
         description: The timestamp of the customer's most recent successful delivery.
+
+      - name: fulfillment_ratio
+        description: The percentage of deliveries that were successful for the customer, expressed as a value between 0 and 100.
+        tests:
+          - not_null
