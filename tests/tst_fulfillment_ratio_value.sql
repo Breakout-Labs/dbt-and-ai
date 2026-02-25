@@ -1,3 +1,8 @@
+{{
+  config(
+    enabled = false,
+    )
+}}
 -- Asserts that fulfillment_ratio is always between 0 and 1 inclusive.
 -- Any rows returned indicate a failure.
 

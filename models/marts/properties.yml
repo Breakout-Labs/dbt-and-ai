@@ -27,6 +27,7 @@ models:
         tests:
           - unique
           - not_null
+
   - name: deliveries
     description: Each record represents aggregated delivery metrics for a customer. Grain is one row per customer.
     columns:
@@ -35,23 +36,61 @@ models:
         tests:
           - unique
           - not_null
+
       - name: total_deliveries
         description: The total number of deliveries associated with the customer's orders.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              name: successful_deliveries_lte_total_deliveries
+              arguments:
+                expression: "<= total_deliveries"
+
       - name: failed_deliveries
         description: The number of deliveries with a status of 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              name: failed_deliveries_lte_total_deliveries
+              arguments:
+                expression: "<= total_deliveries"
+
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              name: other_status_deliveries_lte_total_deliveries
+              arguments:
+                expression: "<= total_deliveries"
+
       - name: last_delivery_date
         description: The date of the customer's most recent delivery.
+
       - name: fulfillment_ratio
         description: The ratio of successfully delivered orders to total deliveries for the customer. Returns 0 if the customer has no deliveries.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "<= 1"
