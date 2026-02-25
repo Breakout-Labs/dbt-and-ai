@@ -30,6 +30,10 @@ models:
 
   - name: deliveries
     description: Each record represents a customer's all-time delivery summary, including counts by delivery status and the date of their most recent delivery.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+          name: deliveries__status_counts_sum_to_total
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
@@ -41,21 +45,38 @@ models:
         description: The total number of deliveries across all orders for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered' for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: failed_deliveries
         description: The number of deliveries with a status of 'failed' for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
 
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'failed' for the customer.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: fulfillment_ratio
+        description: The proportion of deliveries that were successfully delivered, calculated as successful_deliveries / total_deliveries. Returns 0 when total_deliveries is 0.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              expression: "<= 1"
 
       - name: last_delivery_date
         description: The date of the customer's most recent successfully delivered order.
