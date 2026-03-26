@@ -38,11 +38,40 @@ models:
           - not_null
       - name: total_deliveries
         description: Total number of deliveries associated with the customer across all statuses.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
       - name: successful_deliveries
         description: Number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
       - name: failed_deliveries
         description: Number of deliveries with a status of 'cancelled'.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
       - name: other_status_deliveries
         description: Number of deliveries with a status other than 'delivered' or 'cancelled'.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
       - name: last_delivery_date
         description: The date of the customer's most recent delivered delivery.
+        tests:
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: date
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: "'2000-01-01'"
+              max_value: "cast(current_date as date)"
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for the customer.
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
