@@ -19,7 +19,7 @@ models:
         description: The timestamp of a customer's first order.
       - name: most_recent_order_at
         description: The timestamp of a customer's most recent order.
-        
+
   - name: orders
     description: Each record represents an order.
     columns:
@@ -27,9 +27,12 @@ models:
         tests:
           - unique
           - not_null
-          
+
   - name: deliveries
     description: Each record represents a customer and their aggregate delivery statistics across all orders.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "fulfillment_ratio is null and total_deliveries = 0 or fulfillment_ratio is not null and total_deliveries > 0"
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
@@ -40,6 +43,8 @@ models:
         description: The total number of deliveries across all of a customer's orders.
         tests:
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: "= successful_deliveries + failed_deliveries + other_status_deliveries"
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered'.
         tests:
@@ -53,4 +58,6 @@ models:
         tests:
           - not_null
       - name: last_delivery_date
-        description: The date of the customer's most recent successful delivery.
+        description: The date of the customer's most recent successful delivery. Null if the customer has never had a successful delivery.
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for a customer. Null if the customer has no deliveries.
