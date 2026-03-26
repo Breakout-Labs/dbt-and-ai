@@ -19,7 +19,7 @@ models:
         description: The timestamp of a customer's first order.
       - name: most_recent_order_at
         description: The timestamp of a customer's most recent order.
-        
+
   - name: orders
     description: Each record represents an order.
     columns:
@@ -27,8 +27,20 @@ models:
         tests:
           - unique
           - not_null
+
   - name: deliveries
     description: Aggregates key delivery data per customer, including delivery counts by status and the date of their most recent delivery.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries = successful_deliveries + failed_deliveries + other_status_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "fulfillment_ratio between 0 and 1"
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries <= total_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "failed_deliveries <= total_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "other_status_deliveries <= total_deliveries"
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
@@ -40,21 +52,37 @@ models:
         description: Total number of deliveries associated with the customer across all statuses.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 1
 
       - name: successful_deliveries
         description: Number of deliveries with a status of 'delivered'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: failed_deliveries
         description: Number of deliveries with a status of 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: other_status_deliveries
         description: Number of deliveries with a status other than 'delivered' or 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: last_delivery_date
         description: The date of the customer's most recent delivery across all statuses.
+
+      - name: fulfillment_ratio
+        description: The proportion of deliveries that were successfully delivered. Calculated as successful_deliveries divided by total_deliveries. Null-safe — returns null if total_deliveries is zero.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
