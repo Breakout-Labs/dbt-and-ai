@@ -4,3 +4,6 @@ packages:
 
   - package: calogica/dbt_expectations
     version: [">=0.10.0", "<1.0.0"]
+
+  - package: Snowflake-Labs/dbt_semantic_view
+    version: 1.0.3    
