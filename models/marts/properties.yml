@@ -27,7 +27,7 @@ models:
         tests:
           - unique
           - not_null
-
+ 
   - name: deliveries
     description: Each record represents a customer's all-time delivery summary, including counts of successful, failed, and other-status deliveries.
     columns:
@@ -38,6 +38,9 @@ models:
           - not_null
       - name: total_deliveries
         description: The total number of deliveries associated with a customer across all orders.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "= successful_deliveries + failed_deliveries + other_status_deliveries"
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered'.
       - name: failed_deliveries
@@ -45,4 +48,9 @@ models:
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
       - name: last_delivery_date
-        description: The date of the customer's most recent successful delivery.
+        description: The date of the customer's most recent successful delivery. Null when a customer has no successful deliveries.
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for a customer. Null when a customer has no deliveries.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "between 0 and 1"
