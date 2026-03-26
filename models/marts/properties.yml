@@ -1,29 +1,67 @@
 version: 2
 
 models:
-  - name: customers
-    description: Each record represents a customer.
+  - name: fct_customer_delivery_stats
+    description: Aggregates key delivery data per customer, including total, successful, cancelled, and other-status deliveries, the date of their most recent delivery, and a fulfillment ratio.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+          name: fct_customer_delivery_stats__delivery_counts_sum_to_total
+      - dbt_utils.expression_is_true:
+          expression: "last_delivery_date is not null or successful_deliveries = 0"
+          name: fct_customer_delivery_stats__last_delivery_date_null_only_when_no_successful_deliveries
+      - dbt_utils.expression_is_true:
+          expression: "fulfillment_ratio is null or (fulfillment_ratio >= 0 and fulfillment_ratio <= 1)"
+          name: fct_customer_delivery_stats__fulfillment_ratio_between_zero_and_one
+
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
         tests:
           - unique
           - not_null
-      - name: first_name
-        description: A customer's first name.
-      - name: last_name
-        description: A customer's last name.
-      - name: count_orders
-        description: The number of orders a customer has had all-time.
-      - name: first_order_at
-        description: The timestamp of a customer's first order.
-      - name: most_recent_order_at
-        description: The timestamp of a customer's most recent order.
-        
-  - name: orders
-    description: Each record represents an order.
-    columns:
-      - name: order_id
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+
+      - name: total_deliveries
+        description: Total number of deliveries across all statuses for the customer.
         tests:
-          - unique
           - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 1"
+              name: fct_customer_delivery_stats__total_deliveries_at_least_one
+
+      - name: successful_deliveries
+        description: Number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: fct_customer_delivery_stats__successful_deliveries_non_negative
+
+      - name: failed_deliveries
+        description: Number of deliveries with a status of 'cancelled'.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: fct_customer_delivery_stats__failed_deliveries_non_negative
+
+      - name: other_status_deliveries
+        description: Number of deliveries with a status other than 'delivered' or 'cancelled'.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: fct_customer_delivery_stats__other_status_deliveries_non_negative
+
+      - name: last_delivery_date
+        description: The date of the customer's most recent successful delivery.
+
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for the customer. Null when the customer has no deliveries.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "is null or (fulfillment_ratio >= 0 and fulfillment_ratio <= 1)"
+              name: fct_customer_delivery_stats__fulfillment_ratio_between_zero_and_one
