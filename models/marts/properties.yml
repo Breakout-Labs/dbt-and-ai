@@ -31,32 +31,59 @@ models:
 
   - name: deliveries
     description: Each record represents aggregated delivery statistics for a single customer, across all of their orders.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries <= total_deliveries"
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
         tests:
           - unique
           - not_null
+      
 
       - name: total_deliveries
         description: The total number of deliveries across all orders placed by the customer, regardless of delivery status.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
 
       - name: successful_deliveries
         description: The number of deliveries that reached a status of 'delivered' for the customer.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
 
       - name: failed_deliveries
         description: The number of deliveries that reached a status of 'cancelled' for the customer.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
 
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'cancelled' (e.g. in_transit) for the customer.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: true
 
       - name: last_delivery_date
-        description: The date of the customer's most recent successfully delivered order.
+        description: The date of the customer's most recent successfully delivered order. 
+        
+      - name: fulfillment_ratio
+        description: The ratio of successfully delivered orders to all orders that were not in a 'picked_up' status. Ranges from 0 to 1. Defaults to 0 for customers with no eligible deliveries.
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1
+              inclusive: true

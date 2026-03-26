@@ -24,7 +24,7 @@ joined as (
 aggregated as (
     select
         customer_id,
-        count(*) as total_deliveries,
+        coalesce(nullif(count(case when delivery_status != 'picked_up' then 1 end), 0),0) as total_deliveries,
         count(case when delivery_status = 'delivered' then 1 end) as successful_deliveries,
         count(case when delivery_status = 'cancelled' then 1 end) as failed_deliveries,
         count(case when delivery_status not in ('delivered', 'cancelled') then 1 end) as other_status_deliveries,
