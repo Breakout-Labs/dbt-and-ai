@@ -27,3 +27,30 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents a customer and their aggregated delivery statistics across all orders.
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+      - name: total_deliveries
+        description: The total number of deliveries associated with the customer across all orders.
+        tests:
+          - not_null
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'cancelled'.
+        tests:
+          - not_null
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
+        tests:
+          - not_null
+      - name: last_delivery_date
+        description: The timestamp of the customer's most recent delivery.
