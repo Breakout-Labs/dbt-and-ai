@@ -19,7 +19,7 @@ models:
         description: The timestamp of a customer's first order.
       - name: most_recent_order_at
         description: The timestamp of a customer's most recent order.
-        
+
   - name: orders
     description: Each record represents an order.
     columns:
@@ -27,3 +27,27 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents a customer's aggregated delivery statistics, including total, successful, failed, and other status deliveries.
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+
+      - name: total_deliveries
+        description: The total number of deliveries associated with a customer across all statuses.
+
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered' for a customer.
+
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'failed' for a customer.
+
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'failed' for a customer.
+
+      - name: last_delivery_date
+        description: The date of the customer's most recent delivery.
