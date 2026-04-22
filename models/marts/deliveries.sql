@@ -29,8 +29,8 @@ aggregated as (
         customer_id,
         count(*) as total_deliveries,
         count(case when delivery_status = 'delivered' then 1 end) as successful_deliveries,
-        count(case when delivery_status = 'failed' then 1 end) as failed_deliveries,
-        count(case when delivery_status not in ('delivered', 'failed') then 1 end) as other_status_deliveries,
+        count(case when delivery_status = 'cancelled' then 1 end) as failed_deliveries,
+        count(case when delivery_status not in ('delivered', 'cancelled') then 1 end) as other_status_deliveries,
         count(case when delivery_status = 'delivered' then 1 end) * 1.0 / count(*) as fulfillment_ratio,
         max(delivered_at)::date as last_delivery_date
         
