@@ -1,0 +1,42 @@
+models:
+  - name: deliveries
+    columns:
+      - name: delivery_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('orders')
+              field: order_id
+      - name: delivered_at
+        tests:
+          - not_null
+      - name: delivery_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'cancelled', 'pending']
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: total_deliveries
+        tests:
+          - not_null
+      - name: successful_deliveries
+        tests:
+          - not_null
+      - name: failed_deliveries
+        tests:
+          - not_null
+      - name: other_status_deliveries
+        tests:
+          - not_null
+      - name: last_delivery_date
+        tests:
+          - not_null
