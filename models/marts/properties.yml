@@ -35,6 +35,15 @@ models:
 
   - name: deliveries
     description: Each record represents a customer's aggregated delivery statistics, including total, successful, failed, and other delivery counts, as well as the date of their most recent delivery.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries >= successful_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries >= failed_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries >= other_status_deliveries"
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries <= total_deliveries"
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
@@ -46,21 +55,29 @@ models:
         description: The total number of deliveries associated with the customer across all orders.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: successful_deliveries
         description: The number of deliveries with a status of 'delivered'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: failed_deliveries
         description: The number of deliveries with a status of 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: other_status_deliveries
         description: The number of deliveries with a status other than 'delivered' or 'cancelled'.
         tests:
           - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
 
       - name: last_delivery_date
         description: The date of the customer's most recent delivery. This will be null for customers with no deliveries.
