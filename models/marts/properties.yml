@@ -1,29 +1,42 @@
 version: 2
 
 models:
-  - name: customers
-    description: Each record represents a customer.
+  - name: deliveries
+    description: >
+      Each record represents a customer's aggregate delivery history. Includes
+      counts of deliveries by status and the most recent successful delivery date.
+      Joins delivery records to orders to resolve customer identity.
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
         tests:
           - unique
           - not_null
-      - name: first_name
-        description: A customer's first name.
-      - name: last_name
-        description: A customer's last name.
-      - name: count_orders
-        description: The number of orders a customer has had all-time.
-      - name: first_order_at
-        description: The timestamp of a customer's first order.
-      - name: most_recent_order_at
-        description: The timestamp of a customer's most recent order.
-        
-  - name: orders
-    description: Each record represents an order.
-    columns:
-      - name: order_id
+
+      - name: total_deliveries
+        description: Total number of delivery records associated with the customer, across all statuses.
         tests:
-          - unique
           - not_null
+
+      - name: successful_deliveries
+        description: Number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+
+      - name: failed_deliveries
+        description: Number of deliveries with a status of 'failed'.
+        tests:
+          - not_null
+
+      - name: other_status_deliveries
+        description: >
+          Number of deliveries with a status other than 'delivered' or 'failed'
+          (e.g. 'pending', 'cancelled').
+        tests:
+          - not_null
+
+      - name: last_delivery_date
+        description: >
+          The date of the customer's most recent successful delivery, derived from
+          the maximum delivered_at timestamp. Will be null if the customer has no
+          deliveries with a status of 'delivered'.
