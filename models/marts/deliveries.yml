@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: deliveries
+    description: Each record represents a customer's all-time delivery statistics, aggregated from their order history.
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+      - name: total_deliveries
+        description: The total number of deliveries across all orders for the customer.
+        tests:
+          - not_null
+      - name: successful_deliveries
+        description: The number of deliveries with a status of 'delivered' for the customer.
+        tests:
+          - not_null
+      - name: failed_deliveries
+        description: The number of deliveries with a status of 'cancelled' for the customer.
+        tests:
+          - not_null
+      - name: other_status_deliveries
+        description: The number of deliveries with a status other than 'delivered' or 'cancelled' for the customer.
+        tests:
+          - not_null
+      - name: last_delivery_date
+        description: The date of the customer's most recent delivery.
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "total_deliveries >= 0"
+          name: deliveries_total_deliveries_is_non_negative
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries >= 0"
+          name: deliveries_successful_deliveries_is_non_negative
+      - dbt_utils.expression_is_true:
+          expression: "failed_deliveries >= 0"
+          name: deliveries_failed_deliveries_is_non_negative
+      - dbt_utils.expression_is_true:
+          expression: "other_status_deliveries >= 0"
+          name: deliveries_other_status_deliveries_is_non_negative
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries <= total_deliveries"
+          name: deliveries_successful_deliveries_not_exceed_total
+      - dbt_utils.expression_is_true:
+          expression: "failed_deliveries <= total_deliveries"
+          name: deliveries_failed_deliveries_not_exceed_total
+      - dbt_utils.expression_is_true:
+          expression: "other_status_deliveries <= total_deliveries"
+          name: deliveries_other_status_deliveries_not_exceed_total
+      - dbt_utils.expression_is_true:
+          expression: "successful_deliveries + failed_deliveries + other_status_deliveries = total_deliveries"
+          name: deliveries_delivery_counts_sum_to_total
+      - dbt_utils.expression_is_true:
+          expression: "last_delivery_date <= current_date"
+          name: deliveries_last_delivery_date_not_in_future
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: total_deliveries
+        tests:
+          - not_null
+      - name: successful_deliveries
+        tests:
+          - not_null
+      - name: failed_deliveries
+        tests:
+          - not_null
+      - name: other_status_deliveries
+        tests:
+          - not_null
