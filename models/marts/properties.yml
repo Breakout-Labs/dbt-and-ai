@@ -19,7 +19,7 @@ models:
         description: The timestamp of a customer's first order.
       - name: most_recent_order_at
         description: The timestamp of a customer's most recent order.
-        
+
   - name: orders
     description: Each record represents an order.
     columns:
@@ -27,3 +27,54 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: deliveries
+    description: Each record represents a customer's aggregated delivery data, including counts by delivery status and the date of their most recent successful delivery.
+    columns:
+      - name: customer_id
+        description: "{{ doc('customer_id') }}"
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('customers')
+              field: customer_id
+      - name: total_deliveries
+        description: Total number of deliveries associated with the customer across all statuses.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: successful_deliveries
+        description: Number of deliveries with a status of 'delivered'.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: failed_deliveries
+        description: Number of deliveries with a status of 'failed'.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: other_status_deliveries
+        description: Number of deliveries with a status other than 'delivered' or 'failed'.
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: last_delivery_date
+        description: The date of the customer's most recent successful delivery, based on the delivered_at timestamp.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "<= current_date"
+              name: last_delivery_date_not_in_future
+      - name: fulfillment_ratio
+        description: The ratio of successful deliveries to total deliveries for the customer. Null when the customer has no deliveries.
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+              name: fulfillment_ratio_gte_zero
+          - dbt_utils.expression_is_true:
+              expression: "<= 1"
+              name: fulfillment_ratio_lte_one
