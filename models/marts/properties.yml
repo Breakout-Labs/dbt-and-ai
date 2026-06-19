@@ -6,7 +6,7 @@ models:
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: first_name
@@ -24,6 +24,6 @@ models:
     description: Each record represents an order.
     columns:
       - name: order_id
-        tests:
+        data_tests:
           - unique
           - not_null
