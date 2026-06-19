@@ -1,0 +1,33 @@
+# Use one of the two authentication methods below. The first uses username/password with MFA, and the second uses a private key. 
+# Make sure to set the appropriate environment variables for the method you choose.
+
+default:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: BREAKOUTLABS-PROD_ILT
+      authenticator: username_password_mfa
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: INSTRUCTOR
+      warehouse: TRANSFORMING
+      database: BREAKOUT_LABS
+      schema: dbt_and_ai_{{ env_var('SNOWFLAKE_USER') }}
+      threads: 4
+      client_session_keep_alive: false
+
+# default:
+#   target: dev
+#   outputs:
+#     dev:
+#       type: snowflake
+#       account: BREAKOUTLABS-PROD_ILT
+#       user: "{{ env_var('SNOWFLAKE_USER') }}"
+#       private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH') }}"
+#       role: INSTRUCTOR
+#       warehouse: TRANSFORMING
+#       database: BREAKOUT_LABS
+#       schema: dbt_and_ai_{{ env_var('SNOWFLAKE_USER') }}
+#       threads: 4
+#       client_session_keep_alive: false
