@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dbt": {
+      "type": "http",
+      "url": "https://ye878.us1.dbt.com/api/ai/v1/mcp",
+      "headers": {
+        "Authorization": "Token dbtu_wwdma6UU5IJlJX8_vfqxHqK83vuLKsHjTEPgusdpnt9ynQm13E",
+        "x-dbt-prod-environment-id": "462311",
+        "x-dbt-user-id": "70471823456672",
+        "x-dbt-dev-environment-id": "461770"
+      }
+    }
+  }
+}

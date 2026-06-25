@@ -27,3 +27,20 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: finance__monthly_revenue
+    description: >
+      Monthly aggregation of order revenue for the finance team to track sales trends.
+      One row per calendar month. Only delivered orders are counted as revenue.
+    columns:
+      - name: revenue_month
+        description: First day of the calendar month (date truncated from ordered_at).
+        tests:
+          - unique
+          - not_null
+      - name: order_count
+        description: Number of delivered orders in the month.
+      - name: total_revenue
+        description: Sum of total_amount across all delivered orders in the month.
+        tests:
+          - not_null

@@ -1,0 +1,8 @@
+{
+  "enabledMcpjsonServers": [
+    "dbt"
+  ],
+  "enabledPlugins": {
+    "dbt@dbt-agent-marketplace": true
+  }
+}
