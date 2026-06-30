@@ -1,11 +1,11 @@
 version: 2
 
 models:
-  - name: int_marketing__customer_order_stats
+  - name: int_marketing_customer_order_stats
     description: Calculates customer-level order statistics, including average order value and total order count in the last 180 days.
     columns:
       - name: customer_id
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: avg_order_amount
@@ -13,10 +13,10 @@ models:
       - name: order_count
         description: Total number of orders placed by the customer in the last 180 days.
 
-  - name: int_marketing__seven_week_active_customers
+  - name: int_marketing_seven_week_active_customers
     description: Identifies customers who have placed at least one order in the past 7 weeks.
     columns:
       - name: customer_id
-        tests:
+        data_tests:
           - unique
           - not_null
