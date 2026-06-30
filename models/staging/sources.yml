@@ -14,14 +14,11 @@ sources:
 
       - name: orders
         identifier: orders_us
-        description: Each record in this table represents an order in our ecommerce application.
+        description: Each record in this table represents an order in our ecommerce application
 
       - name: order_lines
         description: Each record in this table represents one product line item within an order
 
-      - name: products
-        description: Product catalog with categories, pricing, and variant metadata
-      
       
   - name: sheets
     database: raw

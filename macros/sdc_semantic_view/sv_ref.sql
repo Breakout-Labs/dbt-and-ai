@@ -33,11 +33,7 @@ name: MASTER_DATA
 ----------------------------------------------------------------------------------------------------------------
 -#}
 
-{% macro sv_ref(ref_name, database_name=none, schema_name=none, v=none, version=none) %}
-    {{- return(adapter.dispatch('sv_ref', 'sie_dbt_utils')(ref_name=ref_name, database_name=database_name, schema_name=schema_name, v=v, version=version)) -}}
-{% endmacro %}
-
-{% macro default__sv_ref(ref_name, database_name=none, schema_name=none,v=none, version=none) %}
+{% macro sv_ref(ref_name, database_name=none, schema_name=none,v=none, version=none) %}
 {% set ref_rel=ref(ref_name, v=v if v else version) %}
 {% set final_ref %}
         database: {{ database_name if database_name else ref_rel.database }}
@@ -46,5 +42,3 @@ name: MASTER_DATA
 {% endset %}
 {{ return(final_ref) }}
 {% endmacro %}
-
-

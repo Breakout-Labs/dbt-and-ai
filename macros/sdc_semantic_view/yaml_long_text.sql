@@ -47,9 +47,6 @@ objects:
 -#}
 
 {% macro yaml_long_text(long_text, indent=10) %}
-        {{- return(adapter.dispatch('yaml_long_text', 'sie_dbt_utils')(long_text=long_text, indent=indent)) -}}
-{% endmacro %}
-{% macro default__yaml_long_text(long_text, indent=10) %}
     {% set indent_str = ' ' * indent %}
     {# simplify all carriage return into newline #}
     {% set new_text = long_text.replace('\r\n', '\n') %}

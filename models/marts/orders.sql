@@ -1,18 +1,15 @@
 with orders as (
-    select
-        *
+    select *
     from {{ ref('stg_ecomm__orders') }}
 ),
 
 deliveries as (
-    select
-        *
+    select *
     from {{ ref('stg_ecomm__deliveries') }}
 ),
 
 deliveries_filtered as (
-    select
-        *
+    select *
     from deliveries
     where delivery_status = 'delivered'
 ),
@@ -31,6 +28,5 @@ joined as (
     left join deliveries_filtered using (order_id)
 )
 
-select
-  *
+select *
 from joined

@@ -1,24 +1,24 @@
-with source as (
-  select
-    *
-  from {{ source('ecomm', 'orders') }}
+with
+
+source as (
+
+    select * from {{ source('ecomm', 'orders') }}
+
 ),
 
 renamed as (
-  select
-    id as order_id,
-    *,
-    created_at as ordered_at,
-    status as order_status
-  from source
-),
 
-final as (
-  select
-    *
-  from renamed
+    select
+        id as order_id,
+        total_amount,
+        status as order_status,
+        created_at as ordered_at,
+        customer_id,
+        store_id,
+        _synced_at
+
+    from source
+
 )
 
-select
-  *
-from final
+select * from renamed
