@@ -27,3 +27,17 @@ sources:
     database: raw
     tables:
       - name: customer_survey_responses
+
+  - name: stripe
+    database: raw
+    tables:
+      - name: payments
+        description: Raw Stripe payment events - one JSON object per payment in the JSON_DATA column.
+
+  - name: movies
+    database: raw
+    tables:
+      - name: ratings
+        description: Movie ratings with one record per user and movie rating event.
+      - name: movies
+        description: Movie catalog with title and genres metadata.

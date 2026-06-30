@@ -6,7 +6,7 @@ models:
     columns:
       - name: customer_id
         description: "{{ doc('customer_id') }}"
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: first_name
@@ -19,12 +19,12 @@ models:
         description: The timestamp of a customer's first order.
       - name: most_recent_order_at
         description: The timestamp of a customer's most recent order.
-        
+
   - name: orders
     description: Each record represents an order.
     columns:
       - name: order_id
-        tests:
+        data_tests:
           - unique
           - not_null
 
@@ -35,12 +35,58 @@ models:
     columns:
       - name: revenue_month
         description: First day of the calendar month (date truncated from ordered_at).
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: order_count
         description: Number of delivered orders in the month.
       - name: total_revenue
         description: Sum of total_amount across all delivered orders in the month.
-        tests:
+        data_tests:
+          - not_null
+
+  - name: movie_rating_summary
+    description: One row per movie with aggregated rating activity and movie metadata.
+    columns:
+      - name: movie_id
+        description: Unique identifier for the movie.
+        data_tests:
+          - unique
+          - not_null
+      - name: title
+        description: Title of the movie from the raw movies source table.
+      - name: genres
+        description: Pipe-delimited genre list for the movie.
+      - name: rating_count
+        description: Total number of ratings submitted for the movie.
+        data_tests:
+          - not_null
+      - name: average_rating
+        description: Average rating value across all ratings for the movie.
+        data_tests:
+          - not_null
+      - name: distinct_user_count
+        description: Number of distinct users who rated the movie.
+        data_tests:
+          - not_null
+
+
+  - name: movie_co_occurrence
+    description: One row per unique pair of movies with the number of distinct users who rated both movies.
+    columns:
+      - name: movie_id_1
+        description: The lower-valued movie identifier in the pair.
+        data_tests:
+          - not_null
+      - name: movie_title_1
+        description: Title of the first movie in the pair.
+      - name: movie_id_2
+        description: The higher-valued movie identifier in the pair.
+        data_tests:
+          - not_null
+      - name: movie_title_2
+        description: Title of the second movie in the pair.
+      - name: distinct_user_count
+        description: Number of distinct users who rated both movies in the pair.
+        data_tests:
           - not_null

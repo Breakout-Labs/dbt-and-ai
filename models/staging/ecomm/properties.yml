@@ -6,7 +6,7 @@ models:
     columns:
       - name: order_line_id
         description: Primary key for order lines, renamed from id.
-        tests:
+        data_tests:
           - unique
           - not_null
       - name: order_id
@@ -25,3 +25,22 @@ models:
         description: Total price for this line after applying quantity and discount.
       - name: synced_at
         description: Timestamp when this record was last synced from the source system.
+
+  - name: stg_stripe__payments
+    description: One record per Stripe payment, flattened from the raw JSON_DATA object.
+    columns:
+      - name: payment_id
+        description: Primary key for payments, flattened from the Stripe payment id field.
+        data_tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: Foreign key to the related order in the ecommerce application.
+      - name: amount_cents
+        description: Payment amount in cents from the raw Stripe payload.
+      - name: payment_method
+        description: Payment method used for the transaction.
+      - name: payment_provider
+        description: Payment provider that processed the transaction.
+      - name: created_at
+        description: Timestamp when the payment record was created in Stripe.
