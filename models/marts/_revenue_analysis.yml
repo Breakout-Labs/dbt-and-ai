@@ -1,0 +1,5 @@
+version: 2
+
+models:
+  - name: revenue_analysis
+    description: Snowflake semantic view over orders, order lines, and products for revenue analysis in Cortex Analyst.
