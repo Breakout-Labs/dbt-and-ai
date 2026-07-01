@@ -1,0 +1,98 @@
+version: 2
+
+models:
+  - name: stg_ecomm__customers
+    description: Standardized customer records from the raw ecommerce customer source.
+    columns:
+      - name: customer_id
+        description: Primary key for the customer.
+      - name: first_name
+        description: Customer's first name.
+      - name: last_name
+        description: Customer's last name.
+      - name: email
+        description: Customer's email address.
+      - name: address
+        description: Customer's street address.
+      - name: phone_number
+        description: Customer's phone number.
+      - name: created_at
+        description: Timestamp when the customer record was created in the source system.
+
+  - name: stg_ecomm__deliveries
+    description: Standardized delivery records from the raw ecommerce deliveries source.
+    columns:
+      - name: delivery_id
+        description: Primary key for the delivery.
+      - name: order_id
+        description: Foreign key to the related order.
+      - name: picked_up_at
+        description: Timestamp when the delivery was picked up.
+      - name: delivered_at
+        description: Timestamp when the delivery was delivered.
+      - name: delivery_status
+        description: Delivery status from the source system.
+      - name: _synced_at
+        description: Timestamp when the record was last synced from the source system.
+
+  - name: stg_ecomm__orders
+    description: Standardized order records from the raw ecommerce orders source.
+    columns:
+      - name: order_id
+        description: Primary key for the order.
+      - name: total_amount
+        description: Total amount charged for the order.
+      - name: order_status
+        description: Order status from the source system.
+      - name: ordered_at
+        description: Timestamp when the order was created.
+      - name: customer_id
+        description: Foreign key to the customer who placed the order.
+      - name: store_id
+        description: Identifier for the store where the order was placed.
+      - name: _synced_at
+        description: Timestamp when the record was last synced from the source system.
+
+  - name: stg_ecomm__products
+    description: Standardized product records from the raw ecommerce products source.
+    columns:
+      - name: product_id
+        description: Primary key for the product.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Name of the product.
+      - name: product_category
+        description: Top-level category assigned to the product.
+      - name: product_subcategory
+        description: More specific category assigned to the product.
+      - name: unit_price
+        description: Unit price of the product.
+      - name: is_active
+        description: Indicates whether the product is currently active.
+      - name: created_at
+        description: Timestamp when the product record was created in the source system.
+      - name: variants
+        description: Semi-structured variant details for the product.
+      - name: _synced_at
+        description: Timestamp when the record was last synced from the source system.
+
+
+  - name: stg_ecomm__order_lines
+    description: Standardized order line item records from the raw ecommerce order_lines source.
+    columns:
+      - name: order_line_id
+        description: Primary key for the order line item.
+      - name: order_id
+        description: Foreign key to the order this line item belongs to.
+      - name: line_number
+        description: Position of the line item within the order.
+      - name: product_id
+        description: Foreign key to the product included on the order line.
+      - name: quantity
+        description: Quantity of the product included on the order line.
+      - name: unit_price
+        description: Unit price charged for the product on the order line.
+      - name: _synced_at
+        description: Timestamp when the record was last synced from the source system.

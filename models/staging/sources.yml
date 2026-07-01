@@ -19,6 +19,9 @@ sources:
       - name: order_lines
         description: Each record in this table represents one product line item within an order
 
+      - name: products
+        description: Each record in this table represents a product available in our ecommerce application
+
       
   - name: sheets
     database: raw
