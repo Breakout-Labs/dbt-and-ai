@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: delivery_performance
+    description: One record per calendar month, summarizing order volume and delivery performance across all orders placed that month.
+    columns:
+      - name: order_month
+        description: The first day of the calendar month in which orders were placed.
+        data_tests:
+          - unique
+          - not_null
+      - name: total_orders
+        description: Total number of orders placed in the month, regardless of delivery status.
+      - name: delivered_orders
+        description: Number of orders placed in the month that have since been delivered.
+      - name: avg_delivery_time_from_order
+        description: Average time, in minutes, between an order being placed and delivered, across delivered orders in the month.
+      - name: avg_delivery_time_from_collection
+        description: Average time, in minutes, between an order being picked up/collected and delivered, across delivered orders in the month.
