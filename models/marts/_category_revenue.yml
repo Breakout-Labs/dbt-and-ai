@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: category_revenue
+    description: One record per calendar month per product category, summarizing revenue, order volume, and average order value for orders placed that month.
+    columns:
+      - name: category_month_id
+        description: Surrogate primary key generated from order_month and product_category.
+        data_tests:
+          - unique
+          - not_null
+      - name: order_month
+        description: The first day of the calendar month in which orders were placed.
+      - name: product_category
+        description: Top-level category assigned to the product.
+      - name: total_revenue
+        description: Total revenue (quantity times unit price) from order lines in this category, for orders placed in the month.
+      - name: number_of_orders
+        description: Number of distinct orders placed in the month that included at least one line item in this category.
+      - name: average_order_value
+        description: Total revenue for this category and month divided by the number of orders that contributed to it.
