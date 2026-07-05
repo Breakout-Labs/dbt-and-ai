@@ -24,15 +24,23 @@ sources:
         columns:
           - name: id
             description: Unique identifier for each product in the products table.
-          - name: name
-            description: The name of the product.
-          - name: price
-            description: The price of the product.
+          - name: category
+            description: The category to which the product belongs.
+          - name: subcategory
+            description: The subcategory to which the product belongs.
           - name: created_at
             description: The timestamp when the product was created.
-          - name: updated_at
-            description: The timestamp when the product was last updated.
-      
+          - name: name
+            description: The name of the product.
+          - name: is_active
+            description: A boolean indicating whether the product is currently active and available for purchase.
+          - name: unit_price
+            description: The price per unit of the product.
+          - name: variants
+            description: A JSON array containing the different variants of the product, such as size or color.
+          - name: _synced_at
+            description: The timestamp when the product record was last synchronized with the source system.
+
   - name: sheets
     database: raw
     tables:
