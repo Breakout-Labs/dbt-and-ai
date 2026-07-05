@@ -18,7 +18,20 @@ sources:
 
       - name: order_lines
         description: Each record in this table represents one product line item within an order
-
+      
+      - name: products
+        description: Each record in this table represents a product in our ecommerce application.
+        columns:
+          - name: id
+            description: Unique identifier for each product in the products table.
+          - name: name
+            description: The name of the product.
+          - name: price
+            description: The price of the product.
+          - name: created_at
+            description: The timestamp when the product was created.
+          - name: updated_at
+            description: The timestamp when the product was last updated.
       
   - name: sheets
     database: raw
