@@ -16,7 +16,7 @@ name: MASTER_DATA
   tables:
     - name: ifa_master_data
       description: Main table for customer data
-      base_table: {{ sie_dbt_utils.sv_ref('mrt_master_data') }}
+      base_table: {{ sv_ref('mrt_master_data') }}
 
 --> Will compile into:
 name: MASTER_DATA
