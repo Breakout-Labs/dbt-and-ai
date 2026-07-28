@@ -27,3 +27,34 @@ models:
         data_tests:
           - unique
           - not_null
+
+  - name: store_delivery_performance
+    description: Each record represents one store's order and delivery performance for a given month, including month-over-month revenue change.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - store_id
+              - order_month
+    columns:
+      - name: store_id
+        data_tests:
+          - not_null
+      - name: order_month
+        description: The first day of the month this row summarizes.
+        data_tests:
+          - not_null
+      - name: order_count
+        description: Number of orders placed at this store in the month.
+      - name: total_revenue
+        description: Total order revenue for this store in the month.
+      - name: avg_order_amount
+        description: Average order amount for this store in the month.
+      - name: avg_delivery_time_from_order
+        description: Average minutes from order placement to delivery for this store in the month.
+      - name: prior_month_order_count
+        description: Order count for this store in the previous month, for comparison.
+      - name: prior_month_revenue
+        description: Revenue for this store in the previous month, for comparison.
+      - name: revenue_mom_change_pct
+        description: Percent change in revenue vs. the previous month.
