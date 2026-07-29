@@ -11,7 +11,7 @@
 
 #### Syntax.
 ```yaml
-    description: {{ sie_dbt_utils.sv_ref(ref_name, [database_name=none], [schema_name=none],[v=none | version=none]) }}
+    description: {{ sv_ref(ref_name, [database_name=none], [schema_name=none],[v=none | version=none]) }}
 ```
 
 #### Usage.
@@ -31,7 +31,7 @@ name: MASTER_DATA
   tables:
     - name: ifa_master_data
       description: Main table for customer data
-      base_table: {{ sie_dbt_utils.sv_ref('mrt_master_data') }}
+      base_table: {{ sv_ref('mrt_master_data') }}
 
 --> Will compile into:
 name: MASTER_DATA
@@ -57,7 +57,7 @@ name: MASTER_DATA
 
 #### Syntax.
 ```yaml
-    description: {{ sie_dbt_utils.yaml_long_text(long_text=some_long_text_variable, ident=10)}}
+    description: {{ yaml_long_text(long_text=some_long_text_variable, ident=10)}}
 ```
 
 #### Usage.
@@ -78,11 +78,11 @@ expected_output:
 {# use the variable long_desc together with the macro #}
 objects:
   - name: test_Table
-    description: {{ sie_dbt_utils.yaml_long_text(long_descr)}}
+    description: {{ yaml_long_text(long_descr)}}
     properties:
-      description: {{ sie_dbt_utils.yaml_long_text("This is line 1\r\nThis is line 2", 15)}}
+      description: {{ yaml_long_text("This is line 1\r\nThis is line 2", 15)}}
     other_property:
-        description: {{ sie_dbt_utils.yaml_long_text(long_descr)}}
+        description: {{ yaml_long_text(long_descr)}}
 
 --> Will compile into:
 
@@ -110,4 +110,3 @@ objects:
           expected_output:
             this should be interpreted as yaml, but as a long description
 ```
- 
